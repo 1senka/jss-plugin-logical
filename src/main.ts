@@ -13,7 +13,6 @@ const manipulateData = (key: string, value: any) => {
     value = value.split(" ").filter((i: string) => i !== "");
   }
   value = value.filter((i: string) => i !== "");
-  console.log(value);
   const block = `${key}-block`;
   const blockStart = `${key}-block-start`;
   const blockEnd = `${key}-block-end`;
@@ -71,6 +70,10 @@ const alias: Record<string, string> = {
   ["scroll-padding-left"]: "scroll-padding-inline-start",
   ["scroll-padding-top"]: "scroll-padding-block-start",
   ["scroll-padding-bottom"]: "scroll-padding-block-end",
+  ["right"]: "inset-inline-end",
+  ["left"]: "inset-inline-start",
+  ["top"]: "inset-block-start",
+  ["bottom"]: "inset-block-end",
 };
 export default function jssLogical() {
   return {
@@ -91,11 +94,18 @@ export default function jssLogical() {
             Object.assign(style.style, manipulateData(i, style.style[i]));
             delete style.style[i];
           }
+          if (i === "justify-content") {
+            if (style.style[i] === "right") {
+              style.style[i] = "flex-end";
+            }
+            if (style.style[i] === "left") {
+              style.style[i] = "flex-start";
+            }
+          }
         }
       } else {
         delete style.style["flip"];
       }
-      console.log(style.style);
     },
   };
 }

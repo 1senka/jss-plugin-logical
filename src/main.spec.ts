@@ -103,4 +103,48 @@ describe("jss-logical", () => {
       );
     });
   });
+
+  describe("array properties", () => {
+    let sheet: any;
+
+    beforeEach(() => {
+      jss = create().use(logical());
+      sheet = jss.createStyleSheet({
+        button: {
+          padding: [1, 2, 3, 4],
+          margin: "1px 2px 3px 4px",
+          "justify-content": "right",
+        },
+        button2: {
+          padding: [1, 2],
+          margin: "1px 2px 4px !important",
+        },
+      });
+    });
+
+    it("should be logical properties", () => {
+      expect(sheet.toString()).to.be.equals(
+        [
+          ".button-0-8-1 {",
+          "  justify-content: end;",
+          "  padding-block-start: 1px;",
+          "  padding-inline-end: 2px;",
+          "  padding-inline-start: 3px;",
+          "  padding-block-end: 4px;",
+          "  margin-block-start: 1px;",
+          "  margin-inline-end: 2px;",
+          "  margin-inline-start: 3px;",
+          "  margin-block-end: 4px;",
+          "}",
+          ".button2-0-8-2 {",
+          "  padding-block: 1px;",
+          "  padding-inline: 2px;",
+          "  margin-block-start: 1px !important;",
+          "  margin-inline: 2px !important;",
+          "  margin-block-end: 4px !important;",
+          "}",
+        ].join("\n")
+      );
+    });
+  });
 });
