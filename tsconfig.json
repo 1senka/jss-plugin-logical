@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "lib",
-    "target": "es5",
+    "target": "es2020",
     "module": "commonjs",
     "alwaysStrict": true,
     "noEmitOnError": false,

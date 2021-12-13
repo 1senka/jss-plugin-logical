@@ -11,7 +11,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:alitaheri/jss-rtl.git"
+    "url": "git@github.com:1senka/jss-plugin-logical"
   },
   "keywords": [
     "cssinjs",
@@ -20,7 +20,6 @@
     "jss",
     "plugin",
     "rtl",
-    "css-rtl-js",
     "reset"
   ],
   "scripts": {
@@ -49,9 +48,6 @@
     "typescript": "^3.6.3"
   },
   "peerDependencies": {
-    "jss": "^10.0.0"
-  },
-  "dependencies": {
-    "rtl-css-js": "^1.13.1"
+    "jss": ">=10"
   }
 }
