@@ -1,18 +1,28 @@
 const checkArray = (value: any) => {
   return Array.isArray(value) || typeof value === "string";
 };
-const addImportantToProperties = (key: string, value: any) => {
-  let important = false;
-  if (value.includes("!important")) {
-    important = true;
-    value = value.replace("!important", "");
-  }
+
+const addImportantToProperties = (key: string, res: Record<string, string>) => {
+  let value = res[key];
+  let array;
+
   if (Array.isArray(value)) {
-    value = value.map((i) => String(i) + "px");
+    array = value.map((i) => (typeof i === "number" ? String(i) + "px" : i));
   } else {
-    value = value.split(" ").filter((i: string) => i !== "");
+    let important = false;
+
+    if (value.includes("!important")) {
+      important = true;
+      value = value.replace("!important", "");
+    }
+
+    array = value.split(" ").filter((i: string) => i !== "");
+    if (important) {
+      array = array.map((i: string) => i + " !important");
+    }
   }
-  value = value.filter((i: string) => i !== "");
+  array = array.filter((i: string) => i !== "");
+
   const block = `${key}-block`;
   const blockStart = `${key}-block-start`;
   const blockEnd = `${key}-block-end`;
@@ -21,25 +31,35 @@ const addImportantToProperties = (key: string, value: any) => {
   const inlineStart = `${key}-inline-start`;
   const inlineEnd = `${key}-inline-end`;
 
-  let res: any = {};
-  switch (value.length) {
+  switch (array.length) {
+    case 1:
+      res[key] = array[0];
+      break;
+
     case 2:
-      res[block] = !important ? value[0] : value[0] + " !important";
-      res[inline] = !important ? value[1] : value[1] + " !important";
-      return res;
+      res[block] = array[0];
+      res[inline] = array[1];
+      delete res[key];
+
+      break;
     case 3:
-      res[blockStart] = !important ? value[0] : value[0] + " !important";
-      res[inline] = !important ? value[1] : value[1] + " !important";
-      res[blockEnd] = !important ? value[2] : value[2] + " !important";
-      return res;
+      res[blockStart] = array[0];
+      res[inline] = array[1];
+      res[blockEnd] = array[2];
+      delete res[key];
+
+      break;
 
     case 4:
-      res[blockStart] = !important ? value[0] : value[0] + " !important";
-      res[inlineEnd] = !important ? value[1] : value[1] + " !important";
-      res[inlineStart] = !important ? value[2] : value[2] + " !important";
-      res[blockEnd] = !important ? value[3] : value[3] + " !important";
-      return res;
+      res[blockStart] = array[0];
+      res[inlineEnd] = array[1];
+      res[inlineStart] = array[2];
+      res[blockEnd] = array[3];
+      delete res[key];
+
+      break;
   }
+  return res;
 };
 const alias: Record<string, string> = {
   ["padding-right"]: "padding-inline-end",
@@ -86,7 +106,7 @@ const aliasValues: Record<string, Record<string, string>> = {
 export default function jssLogical() {
   return {
     onProcessStyle: (_style: any) => {
-      const style = { ..._style };
+      let style = { ..._style };
 
       if (style["flip"] === undefined || style["flip"] === true) {
         for (let i in style) {
@@ -95,8 +115,7 @@ export default function jssLogical() {
             delete style[i];
           }
           if ((i === "padding" || i === "margin") && checkArray(style[i])) {
-            Object.assign(style, addImportantToProperties(i, style[i]));
-            delete style[i];
+            style = addImportantToProperties(i, style);
           }
           if (aliasValues[i]) {
             if (aliasValues[i][style[i]]) {

@@ -20,7 +20,12 @@ describe("jss-logical", () => {
     let sheet: any;
 
     beforeEach(() => {
-      sheet = jss.createStyleSheet({ a: { "padding-left": "1px" } });
+      sheet = jss.createStyleSheet({
+        a: { "padding-left": "1px" },
+        b: { padding: 2 },
+        c: { margin: "30px" },
+        d: { margin: "30px !important" },
+      });
     });
 
     it("should add rules", () => {
@@ -29,7 +34,20 @@ describe("jss-logical", () => {
 
     it("should generate correct CSS", () => {
       expect(sheet.toString()).to.be.equals(
-        [".a-0-2-1 {", "  padding-inline-start: 1px;", "}"].join("\n")
+        [
+          ".a-0-2-1 {",
+          "  padding-inline-start: 1px;",
+          "}",
+          ".b-0-2-2 {",
+          "  padding: 2;",
+          "}",
+          ".c-0-2-3 {",
+          "  margin: 30px;",
+          "}",
+          ".d-0-2-4 {",
+          "  margin: 30px !important;",
+          "}",
+        ].join("\n")
       );
     });
   });
@@ -76,6 +94,10 @@ describe("jss-logical", () => {
           padding: [1, 2],
           margin: "1px 2px 4px !important",
         },
+        button3: {
+          padding: [1, 2, "3px !important", 4],
+          margin: "1px 2px 3px 4px",
+        },
       });
     });
 
@@ -98,6 +120,16 @@ describe("jss-logical", () => {
           "  margin-block-start: 1px !important;",
           "  margin-inline: 2px !important;",
           "  margin-block-end: 4px !important;",
+          "}",
+          ".button3-0-6-3 {",
+          "  padding-block-start: 1px;",
+          "  padding-inline-end: 2px;",
+          "  padding-inline-start: 3px !important;",
+          "  padding-block-end: 4px;",
+          "  margin-block-start: 1px;",
+          "  margin-inline-end: 2px;",
+          "  margin-inline-start: 3px;",
+          "  margin-block-end: 4px;",
           "}",
         ].join("\n")
       );
