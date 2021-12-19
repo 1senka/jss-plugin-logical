@@ -1,7 +1,7 @@
 const checkArray = (value: any) => {
   return Array.isArray(value) || typeof value === "string";
 };
-const manipulateData = (key: string, value: any) => {
+const addImportantToProperties = (key: string, value: any) => {
   let important = false;
   if (value.includes("!important")) {
     important = true;
@@ -75,37 +75,39 @@ const alias: Record<string, string> = {
   ["top"]: "inset-block-start",
   ["bottom"]: "inset-block-end",
 };
+
+const aliasValues: Record<string, Record<string, string>> = {
+  ["justify-content"]: {
+    right: "flex-end",
+    left: "flex-start",
+  },
+};
+
 export default function jssLogical() {
   return {
-    onProcessRule: (style: any) => {
-      const keys = Object.keys(style.style);
-      let hasFlip = keys.find((i) => i === "flip");
-      if (!(hasFlip && style.style["flip"] === false)) {
-        for (let i in style.style) {
+    onProcessStyle: (_style: any) => {
+      const style = { ..._style };
+
+      if (style["flip"] === undefined || style["flip"] === true) {
+        for (let i in style) {
           if (alias[i]) {
-            delete Object.assign(style.style, {
-              [alias[i]]: style.style[i],
-            })[i];
+            style[alias[i]] = style[i];
+            delete style[i];
           }
-          if (
-            (i === "padding" || i === "margin") &&
-            checkArray(style.style[i])
-          ) {
-            Object.assign(style.style, manipulateData(i, style.style[i]));
-            delete style.style[i];
+          if ((i === "padding" || i === "margin") && checkArray(style[i])) {
+            Object.assign(style, addImportantToProperties(i, style[i]));
+            delete style[i];
           }
-          if (i === "justify-content") {
-            if (style.style[i] === "right") {
-              style.style[i] = "flex-end";
-            }
-            if (style.style[i] === "left") {
-              style.style[i] = "flex-start";
+          if (aliasValues[i]) {
+            if (aliasValues[i][style[i]]) {
+              style[i] = aliasValues[i][style[i]];
             }
           }
         }
-      } else {
-        delete style.style["flip"];
       }
+      delete style["flip"];
+
+      return style;
     },
   };
 }
