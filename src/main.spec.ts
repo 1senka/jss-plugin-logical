@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import logical from "./main";
+import jssLogical from "./main";
 
 const { create, sheets } = require("jss");
 const jssPresetDefault = require("jss-preset-default").default;
@@ -8,7 +8,7 @@ describe("jss-logical", () => {
   let jss: any;
 
   beforeEach(() => {
-    jss = create().use(logical());
+    jss = create().use(jssLogical());
   });
 
   afterEach(() => {
@@ -20,7 +20,12 @@ describe("jss-logical", () => {
     let sheet: any;
 
     beforeEach(() => {
-      sheet = jss.createStyleSheet({ a: { "padding-left": "1px" } });
+      sheet = jss.createStyleSheet({
+        a: { "padding-left": "1px" },
+        b: { padding: 2 },
+        c: { margin: "30px" },
+        d: { margin: "30px !important" },
+      });
     });
 
     it("should add rules", () => {
@@ -29,7 +34,20 @@ describe("jss-logical", () => {
 
     it("should generate correct CSS", () => {
       expect(sheet.toString()).to.be.equals(
-        [".a-0-2-1 {", "  padding-inline-start: 1px;", "}"].join("\n")
+        [
+          ".a-0-2-1 {",
+          "  padding-inline-start: 1px;",
+          "}",
+          ".b-0-2-2 {",
+          "  padding: 2;",
+          "}",
+          ".c-0-2-3 {",
+          "  margin: 30px;",
+          "}",
+          ".d-0-2-4 {",
+          "  margin: 30px !important;",
+          "}",
+        ].join("\n")
       );
     });
   });
@@ -66,7 +84,7 @@ describe("jss-logical", () => {
     let sheet: any;
 
     beforeEach(() => {
-      jss = create().use(logical());
+      jss = create().use(jssLogical());
       sheet = jss.createStyleSheet({
         button: {
           padding: [1, 2, 3, 4],
@@ -75,6 +93,10 @@ describe("jss-logical", () => {
         button2: {
           padding: [1, 2],
           margin: "1px 2px 4px !important",
+        },
+        button3: {
+          padding: [1, 2, "3px !important", 4],
+          margin: "1px 2px 3px 4px",
         },
       });
     });
@@ -99,6 +121,16 @@ describe("jss-logical", () => {
           "  margin-inline: 2px !important;",
           "  margin-block-end: 4px !important;",
           "}",
+          ".button3-0-6-3 {",
+          "  padding-block-start: 1px;",
+          "  padding-inline-end: 2px;",
+          "  padding-inline-start: 3px !important;",
+          "  padding-block-end: 4px;",
+          "  margin-block-start: 1px;",
+          "  margin-inline-end: 2px;",
+          "  margin-inline-start: 3px;",
+          "  margin-block-end: 4px;",
+          "}",
         ].join("\n")
       );
     });
@@ -108,7 +140,7 @@ describe("jss-logical", () => {
     let sheet: any;
 
     beforeEach(() => {
-      jss = create().use(logical());
+      jss = create().use(jssLogical());
       sheet = jss.createStyleSheet({
         button: {
           padding: [1, 2, 3, 4],
@@ -152,7 +184,7 @@ describe("jss-logical", () => {
     let sheet: any;
 
     beforeEach(() => {
-      jss = create().use(...jssPresetDefault().plugins, logical());
+      jss = create().use(...jssPresetDefault().plugins, jssLogical());
       sheet = jss.createStyleSheet({
         "@global": {
           body: {
@@ -173,7 +205,7 @@ describe("jss-logical", () => {
     let jss: any;
 
     beforeEach(() => {
-      jss = create().use(logical());
+      jss = create().use(jssLogical());
     });
 
     afterEach(() => {
@@ -243,6 +275,97 @@ describe("jss-logical", () => {
           ].join("\n")
         );
       });
+    });
+  });
+
+  describe("global and font-face rule", () => {
+    let sheet: any;
+
+    beforeEach(() => {
+      jss = create().use(...jssPresetDefault().plugins, jssLogical());
+      sheet = jss.createStyleSheet({
+        "@global": {
+          "@font-face": [
+            {
+              fontFamily: "Arial",
+              src: 'url(/font/Arial.woff2) format("woff2")',
+            },
+            {
+              fontFamily: "Roboot",
+              src: 'url(/font/Roboot.woff2) format("woff2")',
+            },
+          ],
+          "@media(min-width: 480px)": {
+            body: {
+              padding: [10, 20, 30, 40],
+            },
+          },
+          body: {
+            padding: [1, 2, 3, 4],
+          },
+          "body-no-flip": {
+            flip: false,
+            padding: [1, 2, 3, 4],
+          },
+        },
+        button: {
+          padding: [1, 2, 3, 4],
+          margin: [1, 2, 3, 4],
+          border: [1, "solid", "red"],
+        },
+        "button-no-flip": {
+          flip: false,
+          padding: [1, 2, 3, 4],
+          margin: [1, 2, 3, 4],
+        },
+      });
+    });
+
+    it("should generate space or comma separated values", () => {
+      expect(sheet.toString()).to.be.equals(
+        [
+          "@font-face {",
+          "  font-family: Arial;",
+          '  src: url(/font/Arial.woff2) format("woff2");',
+          "}",
+          "@font-face {",
+          "  font-family: Roboot;",
+          '  src: url(/font/Roboot.woff2) format("woff2");',
+          "}",
+          "@media(min-width: 480px) {",
+          "  body {",
+          "    padding-block-start: 10px;",
+          "    padding-inline-end: 20px;",
+          "    padding-inline-start: 30px;",
+          "    padding-block-end: 40px;",
+          "  }",
+          "}",
+          "body {",
+          "  padding-block-start: 1px;",
+          "  padding-inline-end: 2px;",
+          "  padding-inline-start: 3px;",
+          "  padding-block-end: 4px;",
+          "}",
+          "body-no-flip {",
+          "  padding: 1px 2px 3px 4px;",
+          "}",
+          ".button-0-16-1 {",
+          "  border: 1px solid red;",
+          "  margin-block-start: 1px;",
+          "  margin-inline-end: 2px;",
+          "  margin-inline-start: 3px;",
+          "  margin-block-end: 4px;",
+          "  padding-block-start: 1px;",
+          "  padding-inline-end: 2px;",
+          "  padding-inline-start: 3px;",
+          "  padding-block-end: 4px;",
+          "}",
+          ".button-no-flip-0-16-2 {",
+          "  margin: 1px 2px 3px 4px;",
+          "  padding: 1px 2px 3px 4px;",
+          "}",
+        ].join("\n")
+      );
     });
   });
 });
