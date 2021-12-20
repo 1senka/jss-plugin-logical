@@ -53,8 +53,8 @@ const addImportantToProperties = (key: string, res: Record<string, string>) => {
     case 4:
       res[blockStart] = array[0];
       res[inlineEnd] = array[1];
-      res[inlineStart] = array[2];
-      res[blockEnd] = array[3];
+      res[inlineStart] = array[3];
+      res[blockEnd] = array[2];
       delete res[key];
 
       break;
