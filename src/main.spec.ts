@@ -3,6 +3,10 @@ import jssLogical from "./main";
 
 const { create, sheets } = require("jss");
 const jssPresetDefault = require("jss-preset-default").default;
+const top = 1,
+  right = 2,
+  bottom = 3,
+  left = 4;
 
 describe("jss-logical", () => {
   let jss: any;
@@ -87,7 +91,7 @@ describe("jss-logical", () => {
       jss = create().use(jssLogical());
       sheet = jss.createStyleSheet({
         button: {
-          padding: [1, 2, 3, 4],
+          padding: [top, right, bottom, left],
           margin: "1px 2px 3px 4px",
         },
         button2: {
@@ -95,7 +99,7 @@ describe("jss-logical", () => {
           margin: "1px 2px 4px !important",
         },
         button3: {
-          padding: [1, 2, "3px !important", 4],
+          padding: [top, right, bottom, left + "px !important"],
           margin: "1px 2px 3px 4px",
         },
       });
@@ -105,14 +109,14 @@ describe("jss-logical", () => {
       expect(sheet.toString()).to.be.equals(
         [
           ".button-0-6-1 {",
-          "  padding-block-start: 1px;",
-          "  padding-inline-end: 2px;",
-          "  padding-inline-start: 3px;",
-          "  padding-block-end: 4px;",
-          "  margin-block-start: 1px;",
-          "  margin-inline-end: 2px;",
-          "  margin-inline-start: 3px;",
-          "  margin-block-end: 4px;",
+          `  padding-block-start: ${top}px;`,
+          `  padding-inline-end: ${right}px;`,
+          `  padding-inline-start: ${left}px;`,
+          `  padding-block-end: ${bottom}px;`,
+          `  margin-block-start: ${top}px;`,
+          `  margin-inline-end: ${right}px;`,
+          `  margin-inline-start: ${left}px;`,
+          `  margin-block-end: ${bottom}px;`,
           "}",
           ".button2-0-6-2 {",
           "  padding-block: 1px;",
@@ -122,14 +126,14 @@ describe("jss-logical", () => {
           "  margin-block-end: 4px !important;",
           "}",
           ".button3-0-6-3 {",
-          "  padding-block-start: 1px;",
-          "  padding-inline-end: 2px;",
-          "  padding-inline-start: 3px !important;",
-          "  padding-block-end: 4px;",
-          "  margin-block-start: 1px;",
-          "  margin-inline-end: 2px;",
-          "  margin-inline-start: 3px;",
-          "  margin-block-end: 4px;",
+          `  padding-block-start: ${top}px;`,
+          `  padding-inline-end: ${right}px;`,
+          `  padding-inline-start: ${left}px !important;`,
+          `  padding-block-end: ${bottom}px;`,
+          `  margin-block-start: ${top}px;`,
+          `  margin-inline-end: ${right}px;`,
+          `  margin-inline-start: ${left}px;`,
+          `  margin-block-end: ${bottom}px;`,
           "}",
         ].join("\n")
       );
@@ -143,8 +147,8 @@ describe("jss-logical", () => {
       jss = create().use(jssLogical());
       sheet = jss.createStyleSheet({
         button: {
-          padding: [1, 2, 3, 4],
-          margin: "1px 2px 3px 4px",
+          padding: [top, right, bottom, left],
+          margin: `1px 2px 3px 4px`,
           "justify-content": "right",
         },
         button2: {
@@ -159,14 +163,14 @@ describe("jss-logical", () => {
         [
           ".button-0-8-1 {",
           "  justify-content: flex-end;",
-          "  padding-block-start: 1px;",
-          "  padding-inline-end: 2px;",
-          "  padding-inline-start: 3px;",
-          "  padding-block-end: 4px;",
-          "  margin-block-start: 1px;",
-          "  margin-inline-end: 2px;",
-          "  margin-inline-start: 3px;",
-          "  margin-block-end: 4px;",
+          `  padding-block-start: ${top}px;`,
+          `  padding-inline-end: ${right}px;`,
+          `  padding-inline-start: ${left}px;`,
+          `  padding-block-end: ${bottom}px;`,
+          `  margin-block-start: ${top}px;`,
+          `  margin-inline-end: ${right}px;`,
+          `  margin-inline-start: ${left}px;`,
+          `  margin-block-end: ${bottom}px;`,
           "}",
           ".button2-0-8-2 {",
           "  padding-block: 1px;",
@@ -301,22 +305,22 @@ describe("jss-logical", () => {
             },
           },
           body: {
-            padding: [1, 2, 3, 4],
+            padding: [top, right, bottom, left],
           },
           "body-no-flip": {
             flip: false,
-            padding: [1, 2, 3, 4],
+            padding: [top, right, bottom, left],
           },
         },
         button: {
-          padding: [1, 2, 3, 4],
-          margin: [1, 2, 3, 4],
+          padding: [top, right, bottom, left],
+          margin: [top, right, bottom, left],
           border: [1, "solid", "red"],
         },
         "button-no-flip": {
           flip: false,
-          padding: [1, 2, 3, 4],
-          margin: [1, 2, 3, 4],
+          padding: [top, right, bottom, left],
+          margin: [top, right, bottom, left],
         },
       });
     });
@@ -336,29 +340,29 @@ describe("jss-logical", () => {
           "  body {",
           "    padding-block-start: 10px;",
           "    padding-inline-end: 20px;",
-          "    padding-inline-start: 30px;",
-          "    padding-block-end: 40px;",
+          "    padding-inline-start: 40px;",
+          "    padding-block-end: 30px;",
           "  }",
           "}",
           "body {",
-          "  padding-block-start: 1px;",
-          "  padding-inline-end: 2px;",
-          "  padding-inline-start: 3px;",
-          "  padding-block-end: 4px;",
+          `  padding-block-start: ${top}px;`,
+          `  padding-inline-end: ${right}px;`,
+          `  padding-inline-start: ${left}px;`,
+          `  padding-block-end: ${bottom}px;`,
           "}",
           "body-no-flip {",
           "  padding: 1px 2px 3px 4px;",
           "}",
           ".button-0-16-1 {",
           "  border: 1px solid red;",
-          "  margin-block-start: 1px;",
-          "  margin-inline-end: 2px;",
-          "  margin-inline-start: 3px;",
-          "  margin-block-end: 4px;",
-          "  padding-block-start: 1px;",
-          "  padding-inline-end: 2px;",
-          "  padding-inline-start: 3px;",
-          "  padding-block-end: 4px;",
+          `  margin-block-start: ${top}px;`,
+          `  margin-inline-end: ${right}px;`,
+          `  margin-inline-start: ${left}px;`,
+          `  margin-block-end: ${bottom}px;`,
+          `  padding-block-start: ${top}px;`,
+          `  padding-inline-end: ${right}px;`,
+          `  padding-inline-start: ${left}px;`,
+          `  padding-block-end: ${bottom}px;`,
           "}",
           ".button-no-flip-0-16-2 {",
           "  margin: 1px 2px 3px 4px;",
